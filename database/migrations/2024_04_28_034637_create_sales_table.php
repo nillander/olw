@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('seller_id')->constrained();
             $table->foreignId('client_id')->constrained();
             $table->timestamp('sold_at');
-            $table->string('source');
             $table->char('status', 1);
             $table->integer('total_amount');
             $table->softDeletes();
