@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Models\Client;
@@ -26,7 +30,7 @@ class ClientController extends Controller
      */
     public function create()
     {
-        //
+        return view('clients.create');
     }
 
     /**
@@ -37,7 +41,21 @@ class ClientController extends Controller
      */
     public function store(StoreClientRequest $request)
     {
-        //
+        DB::transaction(function () use ($request) {
+            User::create();
+            $user = User::create([
+                'email' => $request->get('email'),
+                'name' => $request->get('name'),
+                'password' => Hash::make('teste123'),
+            ]);
+
+            $user->client()->create([
+                'address_id' => $request->get('address_id'),
+            ]);
+        });
+
+        return redirect()->route('clients.index');
+        // dd($request->all());
     }
 
     /**
@@ -59,7 +77,7 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
-        //
+        return view('clients.edit', compact('client'));
     }
 
     /**
@@ -71,7 +89,19 @@ class ClientController extends Controller
      */
     public function update(UpdateClientRequest $request, Client $client)
     {
-        //
+        DB::transaction(function () use ($request, $client) {
+            $client->user->update([
+                'email' => $request->get('email'),
+                'name' => $request->get('name'),
+            ]);
+
+            $client->update([
+                'address_id' => $request->get('address_id'),
+            ]);
+        });
+
+        return redirect()->route('clients.index');
+        // dd($request->all());
     }
 
     /**
