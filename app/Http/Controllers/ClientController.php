@@ -42,7 +42,6 @@ class ClientController extends Controller
     public function store(StoreClientRequest $request)
     {
         DB::transaction(function () use ($request) {
-            User::create();
             $user = User::create([
                 'email' => $request->get('email'),
                 'name' => $request->get('name'),
